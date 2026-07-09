@@ -1,0 +1,7 @@
+services:
+  oidc:
+    image: outofcoffee/imposter-all:5-beta
+    volumes:
+      - ./config/:/opt/imposter/config
+    ports:
+      - 8080:8080

@@ -1,0 +1,51 @@
+{
+  "name": "oidc-development-stub",
+  "description": "OIDC provider and consumer stubs for local development and testing",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./consumer": {
+      "types": "./dist/consumer/create-consumer.d.ts",
+      "import": "./dist/consumer/create-consumer.js"
+    },
+    "./provider": {
+      "types": "./dist/provider/create-provider.d.ts",
+      "import": "./dist/provider/create-provider.js"
+    }
+  },
+  "files": [
+    "dist/index.*",
+    "dist/consumer",
+    "dist/provider"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "prepublishOnly": "npm run build",
+    "start": "tsx app.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1083.0",
+    "@aws-sdk/lib-dynamodb": "^3.1083.0",
+    "koa": "^3.2.1",
+    "oidc-provider": "^9.9.0",
+    "openid-client": "^6.8.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/oidc-provider": "^8.5.1",
+    "eslint": "^10.6.0",
+    "prettier": "^3.9.4",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^4.1.10"
+  }
+}
