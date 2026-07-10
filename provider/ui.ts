@@ -29,37 +29,31 @@ export function interactionRoutes(
         return;
       }
 
-      const buttons = accounts
-        .map(
-          (a) =>
-            `<button type="submit" name="accountId" value="${a.sub}">${a.name} (${a.email})</button>`,
-        )
-        .join("\n        ");
+      const accountOptions = [
+        {
+          value: "",
+          text: "N/A",
+          selected: true
+        },
+        ...accounts.map((account) => ({
+          value: account.sub,
+          text: account.email
+        })),
+      ];
 
-      ctx.type = "text/html";
-      ctx.body = `<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8"><title>Pick an Account</title>
-<style>
-  body { font-family: system-ui, sans-serif; max-width: 400px; margin: 80px auto; }
-  button { display: block; width: 100%; padding: 12px; margin: 8px 0; font-size: 16px; cursor: pointer; }
-</style>
-</head>
-<body>
-  <h1>Pick an Account</h1>
-  <form method="POST" action="/interaction/${details.uid}/login">
-    ${buttons}
-  </form>
-</body>
-</html>`;
+      await ctx.render("auth.njk", {
+        interactionUid: details.uid,
+        accountOptions,
+      });
+
       return;
     }
 
     // POST /interaction/:uid/login — complete the login
-    const postMatch = path.match(/^\/interaction\/([^/]+)\/login$/);
-    if (postMatch && method === "POST") {
+    const loginMatch = path.match(/^\/interaction\/([^/]+)\/login$/);
+    if (loginMatch && method === "POST") {
       const body = await parseUrlEncodedBody(ctx.req);
-      const accountId = body.get("accountId");
+      const accountId = body.get("account");
 
       if (!accountId) {
         ctx.status = 400;
@@ -69,6 +63,24 @@ export function interactionRoutes(
 
       await provider.interactionFinished(ctx.req, ctx.res, {
         login: { accountId },
+      });
+      ctx.respond = false;
+      return;
+    }
+
+    // POST /interaction/:uid/error — complete with an error
+    const errorMatch = path.match(/^\/interaction\/([^/]+)\/error$/);
+    if (errorMatch && method === "POST") {
+      const body = await parseUrlEncodedBody(ctx.req);
+
+      // TODO: handle errors issued at token exchange or userinfo
+      if (body.get("errorWhere") !== "authorize") {
+        throw new Error("Cannot return errors on token exchange or userinfo yet");
+      }
+
+      await provider.interactionFinished(ctx.req, ctx.res, {
+        error: body.get("error"),
+        error_description: body.get("error_description"),
       });
       ctx.respond = false;
       return;

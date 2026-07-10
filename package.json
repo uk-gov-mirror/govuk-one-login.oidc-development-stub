@@ -23,7 +23,8 @@
     "dist/provider"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
+    "build": "npm run copy-assets && tsc --project tsconfig.build.json",
+    "copy-assets": "mkdir -p provider/assets && rm -rf provider/assets/* && cp node_modules/govuk-frontend/dist/govuk/govuk-frontend.min.css provider/assets/ && cp node_modules/govuk-frontend/dist/govuk/govuk-frontend.min.js provider/assets/ && cp -r node_modules/govuk-frontend/dist/govuk/assets/* provider/assets/",
     "prepublishOnly": "npm run build",
     "start": "tsx app.ts",
     "test": "vitest run",
@@ -34,12 +35,19 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1083.0",
     "@aws-sdk/lib-dynamodb": "^3.1083.0",
+    "govuk-frontend": "^6.3.0",
     "koa": "^3.2.1",
+    "koa-mount": "^4.2.0",
+    "koa-static": "^5.0.0",
+    "nunjucks": "^3.2.4",
     "oidc-provider": "^9.9.0",
     "openid-client": "^6.8.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/koa-mount": "^4.0.5",
+    "@types/koa-static": "^4.0.4",
+    "@types/nunjucks": "^3.2.6",
     "@types/oidc-provider": "^8.5.1",
     "eslint": "^10.6.0",
     "prettier": "^3.9.4",
