@@ -1,8 +1,12 @@
 import { IncomingMessage, ServerResponse } from "node:http";
+import path from "node:path";
 import Koa from "koa";
+import mount from "koa-mount";
+import serve from "koa-static";
 import Provider from "oidc-provider";
 import { interactionRoutes } from "./ui.js";
 import { resolveAdapter, type AdapterConfig } from "./adapters/index.js";
+import { nunjucksMiddleware } from "./nunjucks.js";
 
 export type { AdapterConfig } from "./adapters/index.js";
 
@@ -137,6 +141,14 @@ export function createOidcProvider(config: OidcProviderConfig): NodeHandler {
   });
 
   const app = new Koa();
+
+  app.use(mount("/assets", serve(path.resolve("provider/assets"))));
+
+  app.use(nunjucksMiddleware({
+    autoescape: true,
+    noCache: process.env.NODE_ENV !== 'production',
+  }));
+
   app.use(interactionRoutes(provider, accounts));
 
   // Fall through to oidc-provider for all other routes
