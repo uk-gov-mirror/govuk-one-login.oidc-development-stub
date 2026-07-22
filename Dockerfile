@@ -5,9 +5,13 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm install tsx
 
+COPY tsconfig.json tsconfig.build.json ./
+
 COPY app.ts index.ts tsconfig.json ./
 COPY consumer/ consumer/
 COPY provider/ provider/
+
+RUN npm run build
 
 EXPOSE 9000
 
