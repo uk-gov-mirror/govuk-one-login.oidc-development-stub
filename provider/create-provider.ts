@@ -3,7 +3,7 @@ import path from "node:path";
 import Koa from "koa";
 import mount from "koa-mount";
 import serve from "koa-static";
-import Provider from "oidc-provider";
+import Provider, { type ClientMetadata } from "oidc-provider";
 import { interactionRoutes } from "./ui.js";
 import { resolveAdapter, type AdapterConfig } from "./adapters/index.js";
 import { nunjucksMiddleware } from "./nunjucks.js";
@@ -19,21 +19,13 @@ export interface OidcAccount {
   /** Additional claims to include in the userinfo response */
   userinfoClaims?: Record<string, unknown>;
 }
-
-export interface OidcClient {
-  clientId: string;
-  clientSecret: string;
-  redirectUris: string[];
-  postLogoutRedirectUris?: string[];
-}
-
 export interface OidcProviderConfig {
   /** The issuer URL (e.g. "http://localhost:9000") */
   issuer: string;
   /** Test accounts available in the account picker */
   accounts: readonly OidcAccount[];
   /** Pre-registered clients */
-  clients: OidcClient[];
+  clients: ClientMetadata[];
   /** Scopes to auto-grant on consent. Defaults to "openid profile email" */
   scopes?: string;
   /**
@@ -78,14 +70,7 @@ export function createOidcProvider(config: OidcProviderConfig): NodeHandler {
 
     adapter: resolveAdapter(adapterConfig),
 
-    clients: clients.map((c) => ({
-      client_id: c.clientId,
-      client_secret: c.clientSecret,
-      redirect_uris: c.redirectUris,
-      post_logout_redirect_uris: c.postLogoutRedirectUris ?? [],
-      grant_types: ["authorization_code"],
-      response_types: ["code" as const],
-    })),
+    clients,
 
     findAccount: (_ctx, id) => {
       const account = accounts.find((a) => a.sub === id);

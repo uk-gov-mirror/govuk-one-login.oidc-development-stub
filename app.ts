@@ -32,11 +32,12 @@ const provider = createOidcProvider({
   customClaims: ["role", "department", "phone", "address"],
   clients: [
     {
-      clientId: "consumer",
-      clientSecret: "consumer-secret",
-      redirectUris: [`${BASE_URL}${CONSUMER_PREFIX}/callback`],
-      postLogoutRedirectUris: [`${BASE_URL}${CONSUMER_PREFIX}/`],
-    },
+      client_id: "consumer",
+      client_secret: "consumer-secret",
+      redirect_uris: [`${BASE_URL}${CONSUMER_PREFIX}/callback`],
+      post_logout_redirect_uris: [`${BASE_URL}${CONSUMER_PREFIX}/`],
+    }
+
   ],
 });
 
