@@ -1,11 +1,19 @@
 import Koa from "koa";
 import { createOidcProvider } from "./provider/create-provider.js";
 import { createOidcConsumer } from "./consumer/create-consumer.js";
+import { ClientMetadata } from "oidc-provider";
 
 const PORT = 9000;
 const BASE_URL = `http://localhost:${PORT}`;
 const CONSUMER_PREFIX = "/consumer";
 
+const client: ClientMetadata =     
+  {
+    client_id: "consumer",
+    client_secret: "consumer-secret",
+    redirect_uris: [`${BASE_URL}${CONSUMER_PREFIX}/callback`],
+    post_logout_redirect_uris: [`${BASE_URL}${CONSUMER_PREFIX}/`],
+  }
 const provider = createOidcProvider({
   issuer: BASE_URL,
   accounts: [
@@ -30,23 +38,12 @@ const provider = createOidcProvider({
     },
   ],
   customClaims: ["role", "department", "phone", "address"],
-  clients: [
-    {
-      client_id: "consumer",
-      client_secret: "consumer-secret",
-      redirect_uris: [`${BASE_URL}${CONSUMER_PREFIX}/callback`],
-      post_logout_redirect_uris: [`${BASE_URL}${CONSUMER_PREFIX}/`],
-    }
-
-  ],
+  clients: [client],
 });
 
 const consumer = createOidcConsumer({
-  providerUrl: BASE_URL,
-  clientId: "consumer",
-  clientSecret: "consumer-secret",
-  redirectUri: `${BASE_URL}${CONSUMER_PREFIX}/callback`,
-  postLogoutRedirectUri: `${BASE_URL}${CONSUMER_PREFIX}/`,
+  provider_url: BASE_URL,
+  ...client
 });
 
 // Imposter version - currently broken

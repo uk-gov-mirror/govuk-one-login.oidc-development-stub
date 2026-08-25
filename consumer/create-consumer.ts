@@ -1,19 +1,10 @@
 import { IncomingMessage, ServerResponse } from "node:http";
+import { ClientMetadata } from "oidc-provider";
 import * as client from "openid-client";
 
-export interface OidcConsumerConfig {
+export interface OidcConsumerConfig extends ClientMetadata {
   /** The provider's issuer URL for discovery (e.g. "http://localhost:9000") */
-  providerUrl: string;
-  /** OAuth client ID registered with the provider */
-  clientId: string;
-  /** OAuth client secret */
-  clientSecret: string;
-  /** Absolute redirect URI for the callback endpoint */
-  redirectUri: string;
-  /** Absolute URI to redirect to after logout */
-  postLogoutRedirectUri: string;
-  /** Scopes to request. Defaults to "openid profile email" */
-  scopes?: string;
+  provider_url: string;
 }
 
 export type NodeHandler = (
@@ -27,12 +18,8 @@ export type NodeHandler = (
  */
 export function createOidcConsumer(config: OidcConsumerConfig): NodeHandler {
   const {
-    providerUrl,
-    clientId,
-    clientSecret,
-    redirectUri,
-    postLogoutRedirectUri,
-    scopes = "openid profile email",
+    provider_url,
+    scope = "openid profile email",
   } = config;
 
   /** In-memory store for pending auth flows, keyed by state */
@@ -43,12 +30,18 @@ export function createOidcConsumer(config: OidcConsumerConfig): NodeHandler {
 
   function getConfig(): Promise<client.Configuration> {
     if (!configPromise) {
-      configPromise = discoverWithRetry(providerUrl, clientId, clientSecret);
+      configPromise = discoverWithRetry(provider_url, config.client_id, config.client_secret);
     }
     return configPromise;
   }
 
   return async (req, res) => {
+    if (!config.redirect_uris){
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Redirect URLs not configured");
+      return;
+    }
+    const postLogoutRedirectUri = config.post_logout_redirect_uris?.at(0) || undefined
     const url = new URL(req.url ?? "/", `http://${req.headers.host}`);
     const path = url.pathname;
     const method = req.method ?? "GET";
@@ -59,17 +52,17 @@ export function createOidcConsumer(config: OidcConsumerConfig): NodeHandler {
     }
 
     if (path === "/login" && method === "GET") {
-      await handleLogin(res, getConfig, redirectUri, scopes, pendingFlows);
+      await handleLogin(res, getConfig, config.redirect_uris[0], scope, pendingFlows);
       return;
     }
 
     if (path === "/callback" && method === "GET") {
-      await handleCallback(url, res, getConfig, redirectUri, pendingFlows);
+      await handleCallback(url, res, getConfig, config.redirect_uris[0], pendingFlows);
       return;
     }
 
     if (path === "/logout" && method === "GET") {
-      await handleLogout(res, getConfig, clientId, postLogoutRedirectUri);
+      await handleLogout(res, getConfig, config.client_id, postLogoutRedirectUri);
       return;
     }
 
@@ -203,7 +196,7 @@ async function handleLogout(
   res: ServerResponse,
   getConfig: () => Promise<client.Configuration>,
   clientId: string,
-  postLogoutRedirectUri: string,
+  postLogoutRedirectUri?: string,
 ): Promise<void> {
   try {
     const oidcConfig = await getConfig();
@@ -218,7 +211,9 @@ async function handleLogout(
 
     const url = new URL(endSessionUrl);
     url.searchParams.set("client_id", clientId);
-    url.searchParams.set("post_logout_redirect_uri", postLogoutRedirectUri);
+    if (postLogoutRedirectUri){
+      url.searchParams.set("post_logout_redirect_uri", postLogoutRedirectUri);
+    }
 
     res.writeHead(302, { Location: url.href });
     res.end();
@@ -235,7 +230,7 @@ async function handleLogout(
 async function discoverWithRetry(
   providerUrl: string,
   clientId: string,
-  clientSecret: string,
+  clientSecret?: string,
   retries = 10,
   delayMs = 1000,
 ): Promise<client.Configuration> {
