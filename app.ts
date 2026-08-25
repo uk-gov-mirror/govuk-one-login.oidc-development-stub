@@ -1,19 +1,13 @@
 import Koa from "koa";
 import { createOidcProvider } from "./provider/create-provider.js";
 import { createOidcConsumer } from "./consumer/create-consumer.js";
-import { ClientMetadata } from "oidc-provider";
+import { fetchConfiguration } from "./consumer/config.js";
 
 const PORT = 9001;
 const BASE_URL = `http://localhost:${PORT}`;
 const CONSUMER_PREFIX = "/consumer";
 
-const client: ClientMetadata =     
-  {
-    client_id: "consumer",
-    client_secret: "consumer-secret",
-    redirect_uris: [`${BASE_URL}${CONSUMER_PREFIX}/callback`],
-    post_logout_redirect_uris: [`${BASE_URL}${CONSUMER_PREFIX}/`],
-  }
+const client = await fetchConfiguration();
 const provider = createOidcProvider({
   issuer: BASE_URL,
   accounts: [
@@ -41,10 +35,7 @@ const provider = createOidcProvider({
   clients: [client],
 });
 
-const consumer = createOidcConsumer({
-  provider_url: BASE_URL,
-  ...client
-});
+const consumer = createOidcConsumer(client);
 
 // Imposter version - currently broken
 // https://github.com/imposter-project/imposter-go/pull/86
@@ -86,6 +77,6 @@ app.use(async (ctx) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`OIDC Provider: ${BASE_URL}`);
-  console.log(`OIDC Consumer: ${BASE_URL}${CONSUMER_PREFIX}`);
+  console.log(`OIDC Provider: ${client.provider_url}`);
+  console.log(`OIDC Consumer: ${client.provider_url}${CONSUMER_PREFIX}`);
 });

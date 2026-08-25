@@ -10,6 +10,7 @@ COPY tsconfig.json tsconfig.build.json ./
 COPY app.ts index.ts tsconfig.json ./
 COPY consumer/ consumer/
 COPY provider/ provider/
+COPY config.local.json ./
 
 RUN npm run build
 

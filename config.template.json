@@ -1,0 +1,7 @@
+{
+  "provider_url": "http://localhost:9001",
+  "client_id": "consumer",
+  "client_secret": "consumer-secret",
+  "redirect_uris": ["http://localhost:9001/consumer/callback"],
+  "post_logout_redirect_uris": ["http://localhost:9001/consumer"]
+}

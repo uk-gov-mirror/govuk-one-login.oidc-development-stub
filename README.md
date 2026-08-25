@@ -45,6 +45,10 @@ The consumer is pre-registered with the provider:
 - **Redirect URI:** `http://localhost:9001/consumer/callback`
 - **Scopes:** `openid profile email`
 
+This config is stored locally in `config.local.json`. There is an example configuration in the repo called `config.template.json`. You need to copy and rename this file in order to run the app locally.
+
+When run in a deployed state, it will look for the secret `${process.env.ENVIRONMENT}-stub-client-config` and import the config from that secret
+
 ## Adapter Configuration
 
 By default the provider uses an in-memory store (state is lost on restart). For Lambda or multi-instance deployments, use the DynamoDB adapter:

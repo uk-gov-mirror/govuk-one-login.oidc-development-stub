@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1083.0",
+    "@aws-sdk/client-secrets-manager": "^3.1117.0",
     "@aws-sdk/lib-dynamodb": "^3.1083.0",
     "govuk-frontend": "^6.3.0",
     "koa": "^3.2.1",
