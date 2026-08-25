@@ -3,7 +3,7 @@ import { ClientMetadata } from "oidc-provider";
 import * as client from "openid-client";
 
 export interface OidcConsumerConfig extends ClientMetadata {
-  /** The provider's issuer URL for discovery (e.g. "http://localhost:9000") */
+  /** The provider's issuer URL for discovery (e.g. "http://localhost:9001") */
   provider_url: string;
 }
 

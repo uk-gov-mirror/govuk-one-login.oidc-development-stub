@@ -20,10 +20,10 @@ Or with Docker:
 docker compose up
 ```
 
-This starts a server on http://localhost:9000. Visiting the root redirects to the consumer UI.
+This starts a server on http://localhost:9001. Visiting the root redirects to the consumer UI.
 
-- **Consumer** — http://localhost:9000/consumer/ (relying party that displays token claims)
-- **Provider** — http://localhost:9000 (OIDC identity provider, serves discovery + auth endpoints)
+- **Consumer** — http://localhost:9001/consumer/ (relying party that displays token claims)
+- **Provider** — http://localhost:9001 (OIDC identity provider, serves discovery + auth endpoints)
 
 Click "Login with OIDC" on the consumer page to run the full authorization code + PKCE flow.
 
@@ -42,7 +42,7 @@ The consumer is pre-registered with the provider:
 
 - **Client ID:** `consumer`
 - **Client Secret:** `consumer-secret`
-- **Redirect URI:** `http://localhost:9000/consumer/callback`
+- **Redirect URI:** `http://localhost:9001/consumer/callback`
 - **Scopes:** `openid profile email`
 
 ## Adapter Configuration

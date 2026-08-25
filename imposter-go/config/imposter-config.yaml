@@ -35,4 +35,4 @@ config:
     - client_id: "webapp"
       client_secret: "webapp-secret"
       redirect_uris:
-        - "http://localhost:9000/consumer/callback"
+        - "http://localhost:9001/consumer/callback"

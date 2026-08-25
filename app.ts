@@ -3,7 +3,7 @@ import { createOidcProvider } from "./provider/create-provider.js";
 import { createOidcConsumer } from "./consumer/create-consumer.js";
 import { ClientMetadata } from "oidc-provider";
 
-const PORT = 9000;
+const PORT = 9001;
 const BASE_URL = `http://localhost:${PORT}`;
 const CONSUMER_PREFIX = "/consumer";
 
