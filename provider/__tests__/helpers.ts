@@ -4,8 +4,8 @@ import {
   createOidcProvider,
   type OidcProviderConfig,
   type OidcAccount,
-  type OidcClient,
 } from "../create-provider.js";
+import { ClientMetadata } from "oidc-provider";
 
 // --- Test defaults ---
 
@@ -14,10 +14,10 @@ export const TEST_ACCOUNTS: readonly OidcAccount[] = [
   { sub: "bob-001", name: "Bob Jones", email: "bob@example.com" },
 ];
 
-export const TEST_CLIENT: OidcClient = {
-  clientId: "test-client",
-  clientSecret: "test-secret",
-  redirectUris: ["http://localhost:0/callback"],
+export const TEST_CLIENT: ClientMetadata = {
+  client_id: "test-client",
+  client_secret: "test-secret",
+  redirect_uris: ["http://localhost:0/callback"],
 };
 
 function generateJwks(): { keys: JsonWebKey[] } {
@@ -59,7 +59,7 @@ export function startProvider(
         // Update client redirect URIs to use the actual port
         const clients = config.clients.map((c) => ({
           ...c,
-          redirectUris: c.redirectUris.map((uri) =>
+          redirect_uris: c.redirect_uris?.map((uri:string) =>
             uri.replace("localhost:0", `localhost:${port}`),
           ),
         }));
