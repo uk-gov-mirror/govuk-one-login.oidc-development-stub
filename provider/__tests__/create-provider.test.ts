@@ -93,7 +93,7 @@ describe("createOidcProvider", () => {
       expect(res.status).toBe(200);
 
       const html = await res.text();
-      expect(html).toContain("Pick an Account");
+      expect(html).toContain("Pre-configured account");
     });
 
     it("account picker shows all configured accounts", async () => {
@@ -113,7 +113,7 @@ describe("createOidcProvider", () => {
       const html = await res.text();
 
       for (const account of TEST_ACCOUNTS) {
-        expect(html).toContain(account.name);
+        expect(html).toContain(account.email);
         expect(html).toContain(account.sub);
       }
     });
@@ -141,7 +141,7 @@ describe("createOidcProvider", () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: "accountId=alice-001",
+          body: "account=alice-001",
         },
         jar,
       );
@@ -223,7 +223,7 @@ describe("createOidcProvider", () => {
       const res = await fetchWithCookies(interactionUrl, {}, jar);
       const html = await res.text();
 
-      expect(html).toContain("Custom User");
+      expect(html).toContain("custom@example.com");
       expect(html).toContain("custom-001");
     });
   });
@@ -255,7 +255,7 @@ describe("createOidcProvider", () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: "accountId=alice-001",
+          body: "account=alice-001",
         },
         jar,
       );
@@ -281,8 +281,8 @@ describe("createOidcProvider", () => {
           code,
           redirect_uri: `${server.baseUrl}/callback`,
           code_verifier: verifier,
-          client_id: TEST_CLIENT.clientId,
-          client_secret: TEST_CLIENT.clientSecret,
+          client_id: TEST_CLIENT.client_id,
+          client_secret: TEST_CLIENT.client_secret,
         }).toString(),
       });
       expect(tokenRes.status).toBe(200);
@@ -324,7 +324,7 @@ describe("createOidcProvider", () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: "accountId=bob-001",
+          body: "account=bob-001",
         },
         jar,
       );
@@ -345,8 +345,8 @@ describe("createOidcProvider", () => {
           code,
           redirect_uri: `${server.baseUrl}/callback`,
           code_verifier: verifier,
-          client_id: TEST_CLIENT.clientId,
-          client_secret: TEST_CLIENT.clientSecret,
+          client_id: TEST_CLIENT.client_id,
+          client_secret: TEST_CLIENT.client_secret,
         }).toString(),
       });
 
@@ -356,7 +356,7 @@ describe("createOidcProvider", () => {
         Buffer.from(tokens.id_token.split(".")[1], "base64url").toString(),
       );
       expect(payload.sub).toBe("bob-001");
-      expect(payload.aud).toBe(TEST_CLIENT.clientId);
+      expect(payload.aud).toBe(TEST_CLIENT.client_id);
       expect(payload.iss).toBe(server.baseUrl);
     });
 
@@ -380,7 +380,7 @@ describe("createOidcProvider", () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: "accountId=alice-001",
+          body: "account=alice-001",
         },
         jar,
       );
@@ -402,8 +402,8 @@ describe("createOidcProvider", () => {
           code,
           redirect_uri: `${server.baseUrl}/callback`,
           code_verifier: "wrong-verifier-that-does-not-match",
-          client_id: TEST_CLIENT.clientId,
-          client_secret: TEST_CLIENT.clientSecret,
+          client_id: TEST_CLIENT.client_id,
+          client_secret: TEST_CLIENT.client_secret,
         }).toString(),
       });
 
@@ -441,7 +441,7 @@ function buildAuthUrl(
 ): string {
   const url = new URL("/auth", baseUrl);
   url.searchParams.set("response_type", "code");
-  url.searchParams.set("client_id", TEST_CLIENT.clientId);
+  url.searchParams.set("client_id", TEST_CLIENT.client_id);
   url.searchParams.set("redirect_uri", `${baseUrl}/callback`);
   url.searchParams.set("scope", "openid profile email");
   url.searchParams.set("code_challenge", params.challenge);
