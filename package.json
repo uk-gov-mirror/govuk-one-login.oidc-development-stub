@@ -50,6 +50,8 @@
     "@types/koa-static": "^4.0.4",
     "@types/nunjucks": "^3.2.6",
     "@types/oidc-provider": "^8.5.1",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-vitest": "^7.1.0",
     "eslint": "^10.6.0",
     "prettier": "^3.9.4",
     "tsx": "^4.19.0",
