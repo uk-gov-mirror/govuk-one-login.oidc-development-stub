@@ -13,6 +13,6 @@ COPY provider/ provider/
 
 RUN npm run build
 
-EXPOSE 9000
+EXPOSE 9001
 
 CMD ["npx", "tsx", "app.ts"]

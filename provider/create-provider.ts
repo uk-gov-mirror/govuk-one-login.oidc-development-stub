@@ -20,7 +20,7 @@ export interface OidcAccount {
   userinfoClaims?: Record<string, unknown>;
 }
 export interface OidcProviderConfig {
-  /** The issuer URL (e.g. "http://localhost:9000") */
+  /** The issuer URL (e.g. "http://localhost:9001") */
   issuer: string;
   /** Test accounts available in the account picker */
   accounts: readonly OidcAccount[];

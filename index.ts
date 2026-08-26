@@ -11,7 +11,6 @@ export {
   createOidcProvider,
   type OidcProviderConfig,
   type OidcAccount,
-  type OidcClient,
   type AdapterConfig,
   type NodeHandler,
 } from "./provider/create-provider.js";
