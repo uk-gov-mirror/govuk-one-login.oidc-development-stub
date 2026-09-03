@@ -45,4 +45,14 @@ describe("fetch configuration", () => {
             SecretId: `${process.env.ENVIRONMENT}-stub-client-config`
         })
     })
+    it("should throw error if configuration is missing required fields", async () => {
+        process.env.ENVIRONMENT = "dev"
+        const smMock = mockClient(SecretsManagerClient);
+        smMock.on(GetSecretValueCommand).resolves({
+            SecretString: JSON.stringify({})
+        })
+
+        await expect(() => fetchConfiguration()).rejects.toThrow(
+            new Error(`Config does not have required fields: ["provider_url","client_id","redirect_uris"]`));
+    })
 })
