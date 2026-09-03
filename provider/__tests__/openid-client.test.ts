@@ -16,8 +16,8 @@ describe("openid-client integration", () => {
     server = await startProvider();
     config = await client.discovery(
       new URL(server.baseUrl),
-      TEST_CLIENT.clientId,
-      TEST_CLIENT.clientSecret,
+      TEST_CLIENT.client_id,
+      TEST_CLIENT.client_secret,
       undefined,
       // eslint-disable-next-line @typescript-eslint/no-deprecated
       { execute: [client.allowInsecureRequests] },
@@ -67,7 +67,7 @@ describe("openid-client integration", () => {
     // 4. Verify id_token claims via openid-client's parsed claims
     const claims = tokens.claims()!;
     expect(claims.sub).toBe("alice-001");
-    expect(claims.aud).toBe(TEST_CLIENT.clientId);
+    expect(claims.aud).toBe(TEST_CLIENT.client_id);
     expect(claims.iss).toBe(server.baseUrl);
 
     // 5. Fetch userinfo via openid-client
@@ -194,7 +194,7 @@ describe("openid-client integration", () => {
       {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `accountId=${accountId}`,
+        body: `account=${accountId}`,
       },
       jar,
     );

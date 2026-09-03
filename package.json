@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1083.0",
+    "@aws-sdk/client-secrets-manager": "^3.1117.0",
     "@aws-sdk/lib-dynamodb": "^3.1083.0",
     "govuk-frontend": "^6.3.0",
     "koa": "^3.2.1",
@@ -49,6 +50,8 @@
     "@types/koa-static": "^4.0.4",
     "@types/nunjucks": "^3.2.6",
     "@types/oidc-provider": "^8.5.1",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-vitest": "^7.1.0",
     "eslint": "^10.6.0",
     "prettier": "^3.9.4",
     "tsx": "^4.19.0",
